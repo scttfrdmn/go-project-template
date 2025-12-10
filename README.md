@@ -68,6 +68,34 @@ make install-tools  # Install staticcheck, golangci-lint
 make clean          # Remove build artifacts
 ```
 
+## GitHub Setup
+
+The script automatically creates a comprehensive set of **14 labels** for issue tracking:
+
+**Priority Labels** (4):
+- `priority:critical` 🔴 - Blocking issues
+- `priority:high` 🟠 - High priority
+- `priority:medium` 🟡 - Medium priority
+- `priority:low` 🟢 - Low priority
+
+**Type Labels** (6):
+- `type:bug` - Something isn't working
+- `type:feature` - New feature or request
+- `type:refactor` - Code refactoring
+- `type:docs` - Documentation
+- `type:test` - Testing improvements
+- `type:chore` - Maintenance tasks
+
+**Status Labels** (2):
+- `status:blocked` - Blocked by another issue
+- `status:needs-info` - Needs more information
+
+**Special Labels** (2):
+- `good-first-issue` - Good for newcomers
+- `help-wanted` - Extra attention needed
+
+Plus an initial **milestone** for your first version, and optionally a **GitHub Project board** for tracking work.
+
 ## CLAUDE.md - Development Guidelines
 
 The included `CLAUDE.md` file provides comprehensive guidelines for working with Go projects:

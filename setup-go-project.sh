@@ -256,13 +256,30 @@ gh repo create "${GITHUB_OWNER}/${PROJECT_NAME}" \
   --source . \
   --remote origin
 
-# Create initial labels
+# Create comprehensive labels
 echo "Creating labels..."
-gh label create "priority:high" --color "D93F0B" --force 2>/dev/null || true
-gh label create "priority:low" --color "0E8A16" --force 2>/dev/null || true
-gh label create "type:bug" --color "D73A4A" --force 2>/dev/null || true
-gh label create "type:feature" --color "0075CA" --force 2>/dev/null || true
-gh label create "type:refactor" --color "CFD3D7" --force 2>/dev/null || true
+
+# Priority labels
+gh label create "priority:critical" --color "B60205" --description "Critical priority - blocking issues" --force 2>/dev/null || true
+gh label create "priority:high" --color "D93F0B" --description "High priority" --force 2>/dev/null || true
+gh label create "priority:medium" --color "FBCA04" --description "Medium priority" --force 2>/dev/null || true
+gh label create "priority:low" --color "0E8A16" --description "Low priority" --force 2>/dev/null || true
+
+# Type labels
+gh label create "type:bug" --color "D73A4A" --description "Something isn't working" --force 2>/dev/null || true
+gh label create "type:feature" --color "0075CA" --description "New feature or request" --force 2>/dev/null || true
+gh label create "type:refactor" --color "CFD3D7" --description "Code refactoring" --force 2>/dev/null || true
+gh label create "type:docs" --color "0075CA" --description "Documentation improvements" --force 2>/dev/null || true
+gh label create "type:test" --color "BFD4F2" --description "Testing improvements" --force 2>/dev/null || true
+gh label create "type:chore" --color "FEF2C0" --description "Maintenance tasks" --force 2>/dev/null || true
+
+# Status labels
+gh label create "status:blocked" --color "E99695" --description "Blocked by another issue" --force 2>/dev/null || true
+gh label create "status:needs-info" --color "D876E3" --description "Needs more information" --force 2>/dev/null || true
+
+# Special labels
+gh label create "good-first-issue" --color "7057FF" --description "Good for newcomers" --force 2>/dev/null || true
+gh label create "help-wanted" --color "008672" --description "Extra attention needed" --force 2>/dev/null || true
 
 # Create milestone
 echo "Creating milestone ${VERSION}..."
