@@ -70,7 +70,7 @@ make clean          # Remove build artifacts
 
 ## GitHub Setup
 
-The script automatically creates a comprehensive set of **14 labels** for issue tracking:
+The script creates a `.github/labels.yml` file with **14 comprehensive labels** and syncs them using [gh-label-sync](https://github.com/scttfrdmn/gh-label-sync):
 
 **Priority Labels** (4):
 - `priority:critical` 🔴 - Blocking issues
@@ -94,7 +94,26 @@ The script automatically creates a comprehensive set of **14 labels** for issue 
 - `good-first-issue` - Good for newcomers
 - `help-wanted` - Extra attention needed
 
-Plus an initial **milestone** for your first version, and optionally a **GitHub Project board** for tracking work.
+Plus an initial **milestone** for your first version (created using [gh-milestone](https://github.com/scttfrdmn/gh-milestone)), and optionally a **GitHub Project board** for tracking work.
+
+### Managing Labels and Milestones
+
+**Update labels:**
+```bash
+# Edit .github/labels.yml, then sync
+gh label-sync sync --file .github/labels.yml --force
+
+# Export labels from another repo
+gh label-sync export --repo source/repo > .github/labels.yml
+```
+
+**Manage milestones:**
+```bash
+gh milestone list                                    # List all milestones
+gh milestone create --title "v0.2.0" --due-date "2026-06-30"
+gh milestone view 1                                  # View details
+gh milestone close 1                                 # Close milestone
+```
 
 ## CLAUDE.md - Development Guidelines
 
@@ -116,6 +135,10 @@ Perfect for AI pair programming with Claude or as a team style guide.
 - Go 1.23+
 - Git
 - [GitHub CLI (`gh`)](https://cli.github.com)
+
+The setup script will automatically install these GitHub CLI extensions:
+- [gh-label-sync](https://github.com/scttfrdmn/gh-label-sync) - Declarative label management
+- [gh-milestone](https://github.com/scttfrdmn/gh-milestone) - Milestone management
 
 ## Philosophy
 

@@ -19,6 +19,17 @@ if ! command -v gh &> /dev/null; then
   exit 1
 fi
 
+# Check and install gh extensions if needed
+echo "Checking gh extensions..."
+if ! gh extension list | grep -q "gh-label-sync"; then
+  echo "Installing gh-label-sync extension..."
+  gh extension install scttfrdmn/gh-label-sync
+fi
+if ! gh extension list | grep -q "gh-milestone"; then
+  echo "Installing gh-milestone extension..."
+  gh extension install scttfrdmn/gh-milestone
+fi
+
 # Gather project info
 read -rp "Project name (e.g., myctl): " PROJECT_NAME
 read -rp "GitHub owner (user/org): " GITHUB_OWNER
@@ -256,37 +267,82 @@ gh repo create "${GITHUB_OWNER}/${PROJECT_NAME}" \
   --source . \
   --remote origin
 
-# Create comprehensive labels
-echo "Creating labels..."
+# Create labels definition file
+echo "Creating labels configuration..."
+mkdir -p .github
+cat > .github/labels.yml <<'EOFLABELS'
+# Project Labels
+# Sync with: gh label-sync sync --file .github/labels.yml
 
-# Priority labels
-gh label create "priority:critical" --color "B60205" --description "Critical priority - blocking issues" --force 2>/dev/null || true
-gh label create "priority:high" --color "D93F0B" --description "High priority" --force 2>/dev/null || true
-gh label create "priority:medium" --color "FBCA04" --description "Medium priority" --force 2>/dev/null || true
-gh label create "priority:low" --color "0E8A16" --description "Low priority" --force 2>/dev/null || true
+labels:
+  # Priority Labels (4)
+  - name: "priority:critical"
+    color: "B60205"
+    description: "Critical priority - blocking issues"
 
-# Type labels
-gh label create "type:bug" --color "D73A4A" --description "Something isn't working" --force 2>/dev/null || true
-gh label create "type:feature" --color "0075CA" --description "New feature or request" --force 2>/dev/null || true
-gh label create "type:refactor" --color "CFD3D7" --description "Code refactoring" --force 2>/dev/null || true
-gh label create "type:docs" --color "0075CA" --description "Documentation improvements" --force 2>/dev/null || true
-gh label create "type:test" --color "BFD4F2" --description "Testing improvements" --force 2>/dev/null || true
-gh label create "type:chore" --color "FEF2C0" --description "Maintenance tasks" --force 2>/dev/null || true
+  - name: "priority:high"
+    color: "D93F0B"
+    description: "High priority"
 
-# Status labels
-gh label create "status:blocked" --color "E99695" --description "Blocked by another issue" --force 2>/dev/null || true
-gh label create "status:needs-info" --color "D876E3" --description "Needs more information" --force 2>/dev/null || true
+  - name: "priority:medium"
+    color: "FBCA04"
+    description: "Medium priority"
 
-# Special labels
-gh label create "good-first-issue" --color "7057FF" --description "Good for newcomers" --force 2>/dev/null || true
-gh label create "help-wanted" --color "008672" --description "Extra attention needed" --force 2>/dev/null || true
+  - name: "priority:low"
+    color: "0E8A16"
+    description: "Low priority"
+
+  # Type Labels (6)
+  - name: "type:bug"
+    color: "D73A4A"
+    description: "Something isn't working"
+
+  - name: "type:feature"
+    color: "0075CA"
+    description: "New feature or request"
+
+  - name: "type:refactor"
+    color: "CFD3D7"
+    description: "Code refactoring"
+
+  - name: "type:docs"
+    color: "0075CA"
+    description: "Documentation improvements"
+
+  - name: "type:test"
+    color: "BFD4F2"
+    description: "Testing improvements"
+
+  - name: "type:chore"
+    color: "FEF2C0"
+    description: "Maintenance tasks"
+
+  # Status Labels (2)
+  - name: "status:blocked"
+    color: "E99695"
+    description: "Blocked by another issue"
+
+  - name: "status:needs-info"
+    color: "D876E3"
+    description: "Needs more information"
+
+  # Special Labels (2)
+  - name: "good-first-issue"
+    color: "7057FF"
+    description: "Good for newcomers"
+
+  - name: "help-wanted"
+    color: "008672"
+    description: "Extra attention needed"
+EOFLABELS
+
+# Sync labels using gh-label-sync
+echo "Syncing labels..."
+echo "y" | gh label-sync sync --file .github/labels.yml --force 2>/dev/null || true
 
 # Create milestone
 echo "Creating milestone ${VERSION}..."
-gh api repos/"${GITHUB_OWNER}/${PROJECT_NAME}"/milestones \
-  -f title="${VERSION}" \
-  -f description="Initial release" \
-  -f state="open" 2>/dev/null || true
+gh milestone create --title "${VERSION}" --description "Initial release" 2>/dev/null || true
 
 # Create GitHub Project if requested
 if [[ "${CREATE_PROJECT,,}" == "y" ]]; then
@@ -306,6 +362,7 @@ git commit -m "feat: initial project scaffold
 - Add Cobra CLI framework
 - Configure linters and pre-commit hooks
 - Add Makefile with check/test/build targets
+- Add label definitions (.github/labels.yml)
 $([ "${CREATE_CI,,}" != "n" ] && echo "- Configure GitHub Actions CI")
 $([ "${CREATE_README,,}" != "n" ] && echo "- Add README with usage instructions")"
 
